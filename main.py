@@ -1,6 +1,7 @@
 import argparse
 import math
 import shutil
+import time
 
 import numpy as np
 import sounddevice as sd
@@ -9,13 +10,13 @@ import matplotlib; matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-fig = plt.figure(figsize=(4,3), facecolor='white')
-ax = fig.add_axes((0., 0., 1., 1.), frameon=False, aspect=1)
+fig = plt.figure(figsize=(5,3), facecolor='white')
+ax = fig.add_axes((0., 0., 1., 1.), frameon=False, aspect=0.75)
 
 # Parameters
 n = 200  # how many circles on the screen at the same time
-size = 10  # size of circles
-starting_x = 1
+size = 20  # size of circles
+starting_x = 1.2
 delta_x = 0.004  # like the moving speed
 
 # Circle positions
@@ -32,18 +33,28 @@ S = np.ones(n) * size
 
 
 # Scatter plot
-scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 1,
+scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 5,
                   edgecolors = C, facecolors='None')
 
 
 # Ensure limits are [0,2] and remove ticks
-ax.set_xlim(0,1.5), ax.set_xticks([])
+ax.set_xlim(0,1.333), ax.set_xticks([])
 ax.set_ylim(0,1), ax.set_yticks([])
 
+last_frame_time = time.time()
+
 def update(frame):
-    global P, Free_position
+
+    global P, Free_position, last_frame_time
+
+    # activate for calculating fps:
+    #current_time = time.time()
+    #fps = 1 / (current_time - last_frame_time)
+    #print("FPS: ", fps)
+    #last_frame_time = current_time
+
     P[:, 0] -= delta_x  # Update ring positions
-    Free_position = frame % n  # Reset specific ring (relative to frame number)
+    Free_position = np.argmin(P[:,0])
     scat.set_offsets(P)  # Update scatter object
     return scat,  # Return the modified object
 
@@ -55,10 +66,7 @@ def int_or_str(text):
     except ValueError:
         return text
 
-try:
-    columns, _ = shutil.get_terminal_size()
-except AttributeError:
-    columns = 80
+columns = 120
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument(
@@ -82,11 +90,11 @@ parser.add_argument(
     '-d', '--device', type=int_or_str,
     help='input device (numeric ID or substring)')
 parser.add_argument(
-    '-g', '--gain', type=float, default=10,
+    '-g', '--gain', type=float, default=30,
     help='initial gain factor (default %(default)s)')
 parser.add_argument(
     '-r', '--range', type=float, nargs=2,
-    metavar=('LOW', 'HIGH'), default=[100, 2000],
+    metavar=('LOW', 'HIGH'), default=[300, 2000],
     help='frequency range (default %(default)s Hz)')
 args = parser.parse_args(remaining)
 low, high = args.range
