@@ -121,14 +121,12 @@ try:
             magnitude *= args.gain / fftsize
             line = (gradient[int(np.clip(x, 0, 1) * (len(gradient) - 1))]
                     for x in magnitude[low_bin:low_bin + args.columns])
-            #print(*line, sep='', end='|\n')
+            print(*line, sep='', end='|\n')
             max_mag = max(magnitude)
             pos_of_max = list(magnitude).index(max_mag)
             if pos_of_max > 0:
                 y_value = pos_of_max / len(magnitude) * 10
-                print(y_value)
                 P[Free_position] = [starting_x, y_value]
-                # 0.925,0.49,.33
                 C[Free_position] = [0.92,y_value if 0 <= 1-y_value <= 1 else 1,1-y_value if 0 <= y_value <= 1 else 1,1]
                 last_circle_y_position = P[np.argmax(P[:,0])][1]
                 oldest_p_index = np.argmin(P[:,0])
