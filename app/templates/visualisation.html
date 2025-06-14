@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Grundlegendes Layout */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Styling für den Button */
+        .record-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 40px;
+            font-size: 2em;
+            font-weight: 700;
+            color: white;
+            background-color: #ec7d44;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.5s ease-out;
+            gap: 10px; /* Abstand zwischen Text und Icon */
+        }
+
+        .record-button:hover {
+            background-color: #e69500;
+        }
+
+        /* Fade effect on click */
+        .record-button:active {
+            opacity: 0.7;
+        }
+
+        /* Pfeil neben dem Text */
+        .record-button::after {
+            content: ' ▶';
+            font-size: 1.2em;
+            padding-left: 10px; /* Abstand zwischen Text und Pfeil */
+        }
+    </style>
+    <script>
+        function redirectToRecording() {
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = "/recording";  // Redirect after fade
+            }, 500); // Wait 0.5 seconds before redirect
+        }
+    </script>
+</head>
+<body>
+    <button class="record-button" onclick="redirectToRecording()">Start Recording</button>
+</body>
+</html>

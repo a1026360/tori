@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your voice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            position: relative;
+        }
+
+        canvas {
+            border: 2px solid #ec7d44;
+            width: 1000px;
+            height: 500px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            margin-left: -30px;
+            margin-top: -30px;
+            border-radius: 50%;
+            border: 5px solid #ec7d44;
+            border-top: 5px solid #8A2BE2;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Your voice</h1>
+    <canvas id="frequencyCanvas"></canvas>
+    <div class="spinner"></div>
+
+    <script>
+        let audioContext, analyser, dataArray, canvas, canvasCtx, x = 0, frequencyPoints = [];
+        let maxFrequency = 8000; // Adjusted max frequency limit
+        let recordingTime = 10 * 1000; // 10 seconds for full screen traversal
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 4096;
+
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(analyser);
+
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    canvas = document.getElementById("frequencyCanvas");
+                    canvasCtx = canvas.getContext("2d");
+
+                    draw();
+
+                    setTimeout(() => {
+                        stream.getTracks().forEach(track => track.stop());
+                        showLoadingSpinner();
+                    }, recordingTime);
+                })
+                .catch(err => console.error("Microphone access denied:", err));
+        }
+
+            function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        let maxIndex = dataArray.indexOf(Math.max(...dataArray));
+        let frequencyHz = maxIndex * (audioContext.sampleRate / analyser.fftSize);
+
+        if (frequencyHz > maxFrequency) return;
+
+        let frequencyPosition = (frequencyHz / maxFrequency) * canvas.height;
+        frequencyPoints.push({ x, y: canvas.height - frequencyPosition, freq: frequencyHz });
+
+        if (frequencyPoints.length > canvas.width) {
+            frequencyPoints.shift();
+        }
+
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        canvasCtx.beginPath();
+        canvasCtx.strokeStyle = "#8A2BE2"; // Kräftiges Violett
+        canvasCtx.lineWidth = 1.5; // Dünn, aber gut sichtbar
+        canvasCtx.lineJoin = "round"; 
+        canvasCtx.lineCap = "round"; 
+
+        frequencyPoints.forEach(point => {
+            canvasCtx.lineTo(point.x, point.y);
+        });
+
+        canvasCtx.stroke();
+        x += 1;
+    }
+
+        function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        let maxIndex = dataArray.indexOf(Math.max(...dataArray));
+        let frequencyHz = maxIndex * (audioContext.sampleRate / analyser.fftSize);
+
+        if (frequencyHz > maxFrequency) return;
+
+        let frequencyPosition = (frequencyHz / maxFrequency) * canvas.height;
+        frequencyPoints.push({ x, y: canvas.height - frequencyPosition, freq: frequencyHz });
+
+        if (frequencyPoints.length > canvas.width) {
+            frequencyPoints.shift();
+        }
+
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        canvasCtx.beginPath();
+        canvasCtx.strokeStyle = "#8A2BE2";
+        canvasCtx.lineWidth = 1.5; 
+        canvasCtx.lineJoin = "round"; 
+        canvasCtx.lineCap = "round"; 
+
+        frequencyPoints.forEach(point => {
+            canvasCtx.lineTo(point.x, point.y);
+        });
+
+        canvasCtx.stroke();
+        x += 1;
+    }
+
+        function getColorForFrequency(frequency) {
+            let ratio = frequency / maxFrequency;
+            let red = Math.round(236 + (138 - 236) * ratio); // Transition from orange to violet
+            let green = Math.round(125 - (125 * ratio));
+            let blue = Math.round(68 + (190 - 68) * ratio);
+            return `rgb(${red}, ${green}, ${blue})`;
+        }
+
+        function showLoadingSpinner() {
+            document.querySelector(".spinner").style.display = "block";
+            setTimeout(() => {
+                document.body.style.opacity = '0'; 
+                window.location.href = "/results"; // Navigate to empty results page
+            }, 5000); // Spinner appears for 2s before navigating
+        }
+
+        startRecording();
+    </script>
+</body>
+</html>

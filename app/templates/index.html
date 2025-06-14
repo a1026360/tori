@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine Flask-Webseite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Grundlegendes Layout */
+        body {
+            display: flex;
+            justify-content: flex-start; /* Linksbündig */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Textbereich links */
+        .text-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Direkt an den Begriffen */
+            text-align: right;
+            font-size: 2em;
+            font-weight: 400;
+            color: #333;
+            padding-right: 40px;
+        }
+
+        /* Begriffe rechts */
+        .animated-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            font-size: 2em;
+            font-weight: 700;
+            color: #ec7d44;
+            gap: 15px;
+            cursor: pointer; /* Zeigt an, dass es klickbar ist */
+        }
+
+        .animated-text span {
+            transition: transform 0.3s ease-in-out, font-size 0.3s ease-in-out;
+        }
+
+        .animated-text span:hover {
+            transform: translateY(-5px) scale(1.2);
+            font-size: 2.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-container">
+        Choose your favorite
+    </div>
+    <div class="animated-text">
+        <span onclick="fadeAndRedirect('/visualisation')">melody</span>
+        <span onclick="fadeAndRedirect('/visualisation')">saying</span>
+        <span onclick="fadeAndRedirect('/visualisation')">whistle</span>
+    </div>
+
+    <script>
+        function fadeAndRedirect(url) {
+            document.body.style.opacity = '0';  // Fade effect
+            setTimeout(() => {
+                window.location.href = url;  // Redirect after fade
+            }, 500); // Wait 0.5 seconds before redirect
+        }
+    </script>
+</body>
+</html>
