@@ -1,6 +1,6 @@
 import argparse
 import math
-import shutil
+import random
 import time
 
 import numpy as np
@@ -14,8 +14,8 @@ fig = plt.figure(figsize=(5,3), facecolor='white')
 ax = fig.add_axes((0., 0., 1., 1.), frameon=False, aspect=0.75)
 
 # Parameters
-n = 200  # how many circles on the screen at the same time
-size = 20  # size of circles
+n = 500  # how many circles on the screen at the same time
+size = 5  # size of circles
 starting_x = 1.2
 delta_x = 0.004  # like the moving speed
 
@@ -25,15 +25,15 @@ P[:,0] = np.ones(n) * starting_x
 
 Free_position = -1
 
-# Ring colors
-C = np.ones((n,4)) * (0,0,0,1)
+# colors
+C = np.ones((n,4)) * (0.8,0.16,1,1)
 
-# Ring sizes
-S = np.ones(n) * size
+# Marker sizes
+S = np.ones(n) * size * 10
 
 
 # Scatter plot
-scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 5,
+scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 0.5,
                   edgecolors = C, facecolors='None')
 
 
@@ -56,6 +56,7 @@ def update(frame):
     P[:, 0] -= delta_x  # Update ring positions
     Free_position = np.argmin(P[:,0])
     scat.set_offsets(P)  # Update scatter object
+    scat.set_color(C)
     return scat,  # Return the modified object
 
 # dirty console application code
@@ -94,7 +95,7 @@ parser.add_argument(
     help='initial gain factor (default %(default)s)')
 parser.add_argument(
     '-r', '--range', type=float, nargs=2,
-    metavar=('LOW', 'HIGH'), default=[300, 2000],
+    metavar=('LOW', 'HIGH'), default=[300, 2200],
     help='frequency range (default %(default)s Hz)')
 args = parser.parse_args(remaining)
 low, high = args.range
@@ -111,7 +112,7 @@ try:
     low_bin = math.floor(low / delta_f)
 
     def callback(indata, frames, time, status):
-        global Free_position
+        global Free_position, P, C
         if status:
             text = ' ' + str(status) + ' '
             print('X', text.center(args.columns, '#'), 'Y', sep='')
@@ -120,12 +121,19 @@ try:
             magnitude *= args.gain / fftsize
             line = (gradient[int(np.clip(x, 0, 1) * (len(gradient) - 1))]
                     for x in magnitude[low_bin:low_bin + args.columns])
-            print(*line, sep='', end='|\n')
-            pos_of_max = list(magnitude).index(max(magnitude))
+            #print(*line, sep='', end='|\n')
+            max_mag = max(magnitude)
+            pos_of_max = list(magnitude).index(max_mag)
             if pos_of_max > 0:
-                P[Free_position] = [starting_x, pos_of_max/len(magnitude)*10]
+                y_value = pos_of_max / len(magnitude) * 10
+                print(y_value)
+                P[Free_position] = [starting_x, y_value]
+                C[Free_position] = [0.6,y_value if 0 <= y_value <= 1 else 1,y_value if 0 <= y_value <= 1 else 1,1]
                 last_circle_y_position = P[np.argmax(P[:,0])][1]
-                P[np.argmin(P[:,0])] = [starting_x-(delta_x/2), last_circle_y_position+(pos_of_max/len(magnitude)*10-last_circle_y_position)/2]
+                oldest_p_index = np.argmin(P[:,0])
+                P[oldest_p_index] = [starting_x - (delta_x/2), last_circle_y_position + (
+                            y_value - last_circle_y_position) / 2]
+                C[oldest_p_index] = [0.6,y_value if 0 <= y_value <= 1 else 1,y_value if 0 <= y_value <= 1 else 1,1]
         else:
             print('no input')
 
