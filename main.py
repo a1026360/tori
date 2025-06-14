@@ -124,6 +124,8 @@ try:
             pos_of_max = list(magnitude).index(max(magnitude))
             if pos_of_max > 0:
                 P[Free_position] = [starting_x, pos_of_max/len(magnitude)*10]
+                last_circle_y_position = P[np.argmax(P[:,0])][1]
+                P[np.argmin(P[:,0])] = [starting_x-(delta_x/2), last_circle_y_position+(pos_of_max/len(magnitude)*10-last_circle_y_position)/2]
         else:
             print('no input')
 
