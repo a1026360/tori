@@ -15,7 +15,7 @@ ax = fig.add_axes((0., 0., 1., 1.), frameon=False, aspect=0.75)
 
 # Parameters
 n = 500  # how many circles on the screen at the same time
-size = 5  # size of circles
+size = 60  # size of circles
 starting_x = 1.2
 delta_x = 0.004  # like the moving speed
 
@@ -29,11 +29,11 @@ Free_position = -1
 C = np.ones((n,4)) * (0.8,0.16,1,1)
 
 # Marker sizes
-S = np.ones(n) * size * 10
+S = np.ones(n) * size
 
 
 # Scatter plot
-scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 0.5,
+scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 10,
                   edgecolors = C, facecolors='None')
 
 
