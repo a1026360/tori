@@ -9,18 +9,18 @@ import matplotlib; matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-fig = plt.figure(figsize=(6,6), facecolor='white')
+fig = plt.figure(figsize=(4,3), facecolor='white')
 ax = fig.add_axes((0., 0., 1., 1.), frameon=False, aspect=1)
 
 # Parameters
 n = 200  # how many circles on the screen at the same time
 size = 10  # size of circles
-starting_y = 0
-delta_y = 0.005  # like the moving speed
+starting_x = 1
+delta_x = 0.004  # like the moving speed
 
 # Circle positions
 P = np.random.uniform(0,1,(n,2))
-P[:,1] = np.ones(n) * starting_y
+P[:,0] = np.ones(n) * starting_x
 
 Free_position = -1
 
@@ -32,17 +32,17 @@ S = np.ones(n) * size
 
 
 # Scatter plot
-scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 0.5,
+scat = ax.scatter(P[:,0], P[:,1], s=S, lw = 1,
                   edgecolors = C, facecolors='None')
 
 
-# Ensure limits are [0,1] and remove ticks
-ax.set_xlim(0,1), ax.set_xticks([])
+# Ensure limits are [0,2] and remove ticks
+ax.set_xlim(0,1.5), ax.set_xticks([])
 ax.set_ylim(0,1), ax.set_yticks([])
 
 def update(frame):
     global P, Free_position
-    P[:, 1] += delta_y  # Update ring positions
+    P[:, 0] -= delta_x  # Update ring positions
     Free_position = frame % n  # Reset specific ring (relative to frame number)
     scat.set_offsets(P)  # Update scatter object
     return scat,  # Return the modified object
@@ -115,7 +115,7 @@ try:
             print(*line, sep='', end='|\n')
             pos_of_max = list(magnitude).index(max(magnitude))
             if pos_of_max > 0:
-                P[Free_position] = [pos_of_max/len(magnitude)*10, starting_y]
+                P[Free_position] = [starting_x, pos_of_max/len(magnitude)*10]
         else:
             print('no input')
 
