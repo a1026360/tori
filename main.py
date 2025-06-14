@@ -26,7 +26,7 @@ P[:,0] = np.ones(n) * starting_x
 Free_position = -1
 
 # colors
-C = np.ones((n,4)) * (0.8,0.16,1,1)
+C = np.ones((n,4)) * (0.925,0.49,.33,1)
 
 # Marker sizes
 S = np.ones(n) * size
@@ -128,12 +128,13 @@ try:
                 y_value = pos_of_max / len(magnitude) * 10
                 print(y_value)
                 P[Free_position] = [starting_x, y_value]
-                C[Free_position] = [0.6,y_value if 0 <= y_value <= 1 else 1,y_value if 0 <= y_value <= 1 else 1,1]
+                # 0.925,0.49,.33
+                C[Free_position] = [0.92,y_value if 0 <= 1-y_value <= 1 else 1,1-y_value if 0 <= y_value <= 1 else 1,1]
                 last_circle_y_position = P[np.argmax(P[:,0])][1]
                 oldest_p_index = np.argmin(P[:,0])
                 P[oldest_p_index] = [starting_x - (delta_x/2), last_circle_y_position + (
                             y_value - last_circle_y_position) / 2]
-                C[oldest_p_index] = [0.6,y_value if 0 <= y_value <= 1 else 1,y_value if 0 <= y_value <= 1 else 1,1]
+                C[oldest_p_index] = [0.92,y_value if 0 <= 1-y_value <= 1 else 1,1-y_value if 0 <= y_value <= 1 else 1,1]
         else:
             print('no input')
 
